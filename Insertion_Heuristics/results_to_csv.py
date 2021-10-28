@@ -24,13 +24,13 @@ def results_to_csv(nodes, paths, timetables):
 
         results.append('')
 
-    if exists('results.csv'):
+    if exists('../results.csv'):
         mode = 'w'
 
     else:
         mode = 'a'
 
-    with open('results.csv', mode, newline='') as results_file:
+    with open('../results.csv', mode, newline='') as results_file:
         writer = csv.writer(results_file)
         writer.writerow(fields)
         writer.writerows(results)

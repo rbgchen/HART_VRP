@@ -1,36 +1,33 @@
 """
 Insertion heuristic for the first way to calculate c2, minimizing push forward and wait times.
 """
+from csv_to_list import csv_to_array
+from results_to_csv import results_to_csv
+
+# Path constants
+a_path = "../data/a.csv"
+b_path = "../data/b.csv"
+s_path = "../data/s.csv"
+t_path = "../data/t.csv"
+d_path = "../data/d.csv"
+
 # Parameter Constants
 MU = 1.0
-ALPHA_1 = 0.50
-ALPHA_2 = 0.50
+ALPHA_1 = 1/3
+ALPHA_2 = 1/3
+ALPHA_3 = 1/3
 LAMBDA = 1.0
 
 # Network data
+a = csv_to_array(a_path)
+b = csv_to_array(b_path)
+s = csv_to_array(s_path)
+t = csv_to_array(t_path)
+d = csv_to_array(d_path)
 HOME = 0
-P_PLUS = {1, 2, 3}
-P_MINUS = {4, 5, 6}
-DEPOT = 7
-a = [float('-inf'), 8.0, 10.0, 12.0, 17.0, 10.0, 12.0, float('-inf')]
-b = [float('inf'), 8.5, 20.0, 13.0, 19.0, 21.0, 21.0, float('inf')]
-s = [0.0, 8.0, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0]
-t = [[0.00, 1.00, 0.25, 0.50, 0.00, 0.00, 0.00, 0.00],
-     [1.00, 0.00, 1.00, 0.50, 1.00, 1.00, 1.00, 1.00],
-     [0.25, 1.00, 0.00, 0.50, 0.25, 0.25, 0.25, 0.25],
-     [0.50, 0.50, 0.50, 0.00, 0.50, 0.50, 0.50, 0.50],
-     [0.00, 1.00, 0.25, 0.50, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 1.00, 0.25, 0.50, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 1.00, 0.25, 0.50, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 1.00, 0.25, 0.50, 0.00, 0.00, 0.00, 0.00]]
-d = [[0.00, 0.00, 2.00, 1.00, 0.00, 0.00, 0.00, 0.00],
-     [2.00, 0.00, 1.00, 1.00, 2.00, 2.00, 2.00, 2.00],
-     [1.00, 1.00, 0.00, 0.50, 1.00, 1.00, 1.00, 1.00],
-     [1.00, 1.00, 0.50, 0.00, 1.00, 1.00, 1.00, 1.00],
-     [0.00, 0.00, 2.00, 1.00, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 0.00, 2.00, 1.00, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 0.00, 2.00, 1.00, 0.00, 0.00, 0.00, 0.00],
-     [0.00, 0.00, 2.00, 1.00, 0.00, 0.00, 0.00, 0.00]]
+P_PLUS = set(range(1, int((len(a)-2)/2) + 1))
+P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
+DEPOT = max(P_MINUS) + 1
 P = P_PLUS | P_MINUS
 N = {HOME} | P | {DEPOT}
 INITIAL_PATH = [[0 if (i, j) != (HOME, DEPOT) else 1 for j in N] for i in N]
@@ -104,15 +101,15 @@ def eval_c_2(path, timetable, i, u, j):
             return float('-inf'), None, None
 
     c_11 = d[i][u] + d[u][j] - MU * d[i][j]
-    c_1 = ALPHA_1 * c_11 + ALPHA_2 * c_12
-    c_2 = LAMBDA * d[0][u] - c_1
+    c_13 = b[u] - new_T[u]
+    c_1 = ALPHA_1 * c_11 + ALPHA_2 * c_12 + ALPHA_3 * c_13
 
     # Inserts new node
     new_path[i][j] = 0
     new_path[i][u] = 1
     new_path[u][j] = 1
 
-    return c_2, new_path, new_T
+    return c_1, new_path, new_T
 
 
 def optimum_c_2(path, timetable):
@@ -125,24 +122,59 @@ def optimum_c_2(path, timetable):
     c_2_op = float('-inf')
     path_op = None
     T_op = None
-    removed_u = None
+    pick_remove = None
+    drop_remove = None
 
     for u in P_PLUS:  # Iterates through each pickup node
-        for i in N:
-            for j in N:
+        u_d = u + int(len(N) / 2) - 1
+
+        for i in N - {u, DEPOT}:
+            for j in N - {u, HOME}:
                 if path[i][j] == 1:
-                    c_2_op_temp, path_op_temp, T_op_temp = eval_c_2(path, timetable, i, u, j)
+                    c_2_p_temp, path_p_temp, T_p_temp = eval_c_2(path, timetable, i, u, j)
 
-                    if c_2_op_temp > c_2_op:  # Takes the maximum c_2
-                        c_2_op = c_2_op_temp
-                        path_op = path_op_temp
-                        T_op = T_op_temp
-                        removed_u = u
+                    if c_2_p_temp != float('-inf'):
+                        c_2_d_temp, path_d_temp, T_d_temp = optimum_c_2_drop(path_p_temp, T_p_temp, u)
 
-    if removed_u is not None:
-        P_PLUS.remove(removed_u)
+                        if (c_2_p_temp + c_2_d_temp) > c_2_op:  # Takes the maximum c_2
+                            c_2_op = c_2_p_temp + c_2_d_temp
+                            path_op = path_d_temp
+                            T_op = T_d_temp
+                            pick_remove = u
+                            drop_remove = u_d
+
+    if pick_remove is not None:
+        P_PLUS.remove(pick_remove)
+        P_MINUS.remove(drop_remove)
 
     return c_2_op, path_op, T_op
+
+
+def optimum_c_2_drop(path, timetable, request):
+    """
+    Finds the optimum c2 of a dropoff node given the request node.
+    :param path: The path currently being used
+    :param timetable: The timetable currently being used
+    :param request: The request to insert
+    :return: The c2, path, and timetable with the dropoff node. Will return -inf, None, None if invalid.
+    """
+    u = request
+    u_d = u + int(len(N) / 2) - 1
+    c_2_d = float('-inf')
+    path_d = None
+    T_d = None
+    N_d = N - (N - (P_PLUS | P_MINUS))  # Ensures that the dropoff comes AFTER the pickup
+    for i in N_d | {u}:
+        for j in N_d | {DEPOT}:
+            if path[i][j] == 1:
+                c_2_d_temp, path_d_temp, T_d_temp = eval_c_2(path, timetable, i, u_d, j)
+
+                if c_2_d_temp > c_2_d:
+                    c_2_d = c_2_d_temp
+                    path_d = path_d_temp
+                    T_d = T_d_temp
+
+    return c_2_d, path_d, T_d
 
 
 def clean_timetable(timetable):
@@ -151,24 +183,25 @@ def clean_timetable(timetable):
     :param timetable: The original timetable.
     :return: The cleaned timetable.
     """
-    tightened = False
     new_timetable = {}
     previous_node = None
     wait_time = 0
     for i in range(len(timetable)):
         if timetable[i] != float('-inf'):
-            if tightened is False and i != 0:
-                new_timetable[0] = [timetable[i] - t[0][i], 0.0]  # Goes back to tighten 0
-                tightened = True
 
             new_timetable[i] = [timetable[i]]
+
             if i != 0:
-                wait_time = new_timetable[i][0] \
-                            - max(a[previous_node],
-                                  new_timetable[previous_node][0] + s[previous_node] + t[previous_node][i])
+                wait_time = a[i] - (new_timetable[previous_node][0] + s[previous_node] + t[previous_node][i])
+
+                if wait_time < 0:  # Accounts for negative wait times
+                    wait_time = 0.0
+
             new_timetable[i].append(wait_time)
             previous_node = i
-
+    key_one = min(new_timetable, key=new_timetable.get)  # Grabs the second smallest time in the table
+    new_timetable[0] = [timetable[key_one] - t[0][key_one], 0.0]
+    new_timetable = dict(sorted(new_timetable.items(), key=lambda item: item[1]))
     return new_timetable
 
 
@@ -185,6 +218,7 @@ def insertion():
     T = copy_timetable(INITIAL_T)
 
     updated_P = P_PLUS
+
     while len(updated_P) != 0:
         updated_P = P_PLUS  # Updates P_PLUS
         c2, path_temp, T_temp = optimum_c_2(path, T)  # Calculates best c2.
@@ -196,14 +230,20 @@ def insertion():
             final_times.append(used_T)
             path = copy_path(INITIAL_PATH)
             T = copy_timetable(INITIAL_T)
+
         else:
             path = copy_path(path_temp)
             T = copy_timetable(T_temp)
             updated_P = P_PLUS.union(P_MINUS)
-    for i in range(len(final_paths)):
-        print_path(final_paths[i])
+
+    final_paths.append(path)
+    final_times.append(T)
+
+    for i in range(len(final_times)):
         final_times[i] = clean_timetable(final_times[i])
-        print_timetable(final_times[i])
+
+    results_to_csv(N, final_paths, final_times)
+    print('Results have been written to ../results.csv.')
 
 
 if __name__ == '__main__':
