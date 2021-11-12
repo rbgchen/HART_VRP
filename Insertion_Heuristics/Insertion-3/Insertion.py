@@ -1,5 +1,5 @@
 """
-Insertion heuristic for the first way to calculate c2, minimizing push forward and wait times.
+Insertion heuristic for the third way to calculate c2, minimizing push forward and wait times.
 """
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
