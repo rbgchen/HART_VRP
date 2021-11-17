@@ -107,20 +107,19 @@ def eval_c2(path, timetable, i, u, j):
 
 
 def optimal_i_j(path, timetable):
-    u = 0
     min_c1 = float('inf')
     op_i = None
     op_j = None
-    for i in N - {DEPOT}:
-        for j in N - {HOME}:
-            if path[i][j] == 1:
-                temp_c1 = eval_c1(timetable, i, u, j)
-                if temp_c1 < min_c1:
-                    min_c1 = temp_c1
-                    op_i = i
-                    op_j = j
+    for u in P_PLUS:
+        for i in N - {DEPOT}:
+            for j in N - {HOME}:
+                if path[i][j] == 1:
+                    temp_c1 = eval_c1(timetable, i, u, j)
+                    if temp_c1 < min_c1:
+                        min_c1 = temp_c1
+                        op_i = i
+                        op_j = j
     return op_i, op_j
-
 
 def optimal_u(path, timetable, i, j):
     min_c2 = float('inf')
@@ -176,12 +175,11 @@ def insertion():
         if (i, j) != (None, None):
             u = optimal_u(path, T, i, j)
             if u is not None:
-                path[i][j] = 0
-                path[i][u] = 1
-                path[u][j] = 1
+                temp_path = copy_path(path)
+                temp_path[i][j] = 0
+                temp_path[i][u] = 1
+                temp_path[u][j] = 1
                 u_d = u + int(len(N) / 2) - 1
-                P_PLUS.remove(u)
-                P_MINUS.remove(u_d)
                 new_T = copy_timetable(T)
                 new_T[u] = max(a[u], T[i] + s[i] + t[i][u])
                 new_T[j] = max(a[j], new_T[u] + s[u] + t[u][j])
@@ -191,7 +189,10 @@ def insertion():
 
                     if T[node] >= T[j]:
                         new_T[node] = T[node] + dT
+                i_d, j_d = optimal_i_j(temp_path, new_T)
                 T = copy_timetable(new_T)
+                P_PLUS.remove(u)
+                P_MINUS.remove(u_d)
                 inserted = True
         if not inserted:
             used_path = copy_path(path)
