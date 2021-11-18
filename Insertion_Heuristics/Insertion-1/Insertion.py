@@ -5,11 +5,20 @@ from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
 
 # Path constants
-a_path = "../data/a.csv"
-b_path = "../data/b.csv"
-s_path = "../data/s.csv"
-t_path = "../data/t.csv"
-d_path = "../data/d.csv"
+#a_path = "../data/a.csv"
+#b_path = "../data/b.csv"
+#s_path = "../data/s.csv"
+#t_path = "../data/t.csv"
+#d_path = "../data/d.csv"
+
+
+a_path = "../data/1002724_a.csv"
+b_path = "../data/1002724_b.csv"
+s_path = "../data/1002724_s.csv"
+t_path = "../data/1002724_TT.csv"
+d_path = "../data/1002724_TT.csv"
+
+
 
 # Parameter Constants
 MU = 1.0
