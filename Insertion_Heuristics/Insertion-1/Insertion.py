@@ -5,20 +5,37 @@ from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
 
 # Path constants
-#a_path = "../data/a.csv"
-#b_path = "../data/b.csv"
-#s_path = "../data/s.csv"
-#t_path = "../data/t.csv"
-#d_path = "../data/d.csv"
+"""
+a_path = "../data/a.csv"
+b_path = "../data/b.csv"
+s_path = "../data/s.csv"
+t_path = "../data/t.csv"
+d_path = "../data/d.csv"
+"""
 
 
 a_path = "../data/1002724_a.csv"
-b_path = "../data/1002724_b.csv"
-s_path = "../data/1002724_s.csv"
+b_path = "../data/1002724_b_tight_tw.csv"
+s_path = "../data/1002724_s_short.csv"
 t_path = "../data/1002724_TT.csv"
 d_path = "../data/1002724_TT.csv"
 
 
+"""
+a_path = "../data/1035989_a.csv"
+b_path = "../data/1035989_b.csv"
+s_path = "../data/1035989_s.csv"
+t_path = "../data/1035989_TT.csv"
+d_path = "../data/1035989_TT.csv"
+"""
+
+"""
+a_path = "../data/1036350_a.csv"
+b_path = "../data/1036350_b.csv"
+s_path = "../data/1036350_s.csv"
+t_path = "../data/1036350_TT.csv"
+d_path = "../data/1036350_TT.csv"
+"""
 
 # Parameter Constants
 MU = 1.0
@@ -176,7 +193,6 @@ def optimum_c_2_drop(path, timetable, request):
         for j in N_d | {DEPOT}:
             if path[i][j] == 1:
                 c_2_d_temp, path_d_temp, T_d_temp = eval_c_2(path, timetable, i, u_d, j)
-
                 if c_2_d_temp > c_2_d:
                     c_2_d = c_2_d_temp
                     path_d = path_d_temp

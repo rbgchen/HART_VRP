@@ -4,12 +4,37 @@ Insertion heuristic for the third way to calculate c2, minimizing push forward a
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
 
-# Path constants
+"""
 a_path = "../data/a.csv"
 b_path = "../data/b.csv"
 s_path = "../data/s.csv"
 t_path = "../data/t.csv"
 d_path = "../data/d.csv"
+"""
+
+
+a_path = "../data/1002724_a.csv"
+b_path = "../data/1002724_b_tight_tw.csv"
+s_path = "../data/1002724_s_short.csv"
+t_path = "../data/1002724_TT.csv"
+d_path = "../data/1002724_TT.csv"
+
+
+"""
+a_path = "../data/1035989_a.csv"
+b_path = "../data/1035989_b.csv"
+s_path = "../data/1035989_s.csv"
+t_path = "../data/1035989_TT.csv"
+d_path = "../data/1035989_TT.csv"
+"""
+
+"""
+a_path = "../data/1036350_a.csv"
+b_path = "../data/1036350_b.csv"
+s_path = "../data/1036350_s.csv"
+t_path = "../data/1036350_TT.csv"
+d_path = "../data/1036350_TT.csv"
+"""
 
 # Parameter Constants
 MU = 1.0
