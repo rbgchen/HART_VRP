@@ -5,12 +5,37 @@ Insertion heuristic for the second way to calculate c2, minimizing push forward 
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
 
-# Path constants
+"""
 a_path = "../data/a.csv"
 b_path = "../data/b.csv"
 s_path = "../data/s.csv"
 t_path = "../data/t.csv"
 d_path = "../data/d.csv"
+"""
+
+"""
+a_path = "../data/1002724_a.csv"
+b_path = "../data/1002724_b_tight_tw.csv"
+s_path = "../data/1002724_s_short.csv"
+t_path = "../data/1002724_TT.csv"
+d_path = "../data/1002724_TT.csv"
+"""
+
+"""
+a_path = "../data/1035989_a.csv"
+b_path = "../data/1035989_b.csv"
+s_path = "../data/1035989_s.csv"
+t_path = "../data/1035989_TT.csv"
+d_path = "../data/1035989_TT.csv"
+"""
+
+
+a_path = "../data/1036350_a.csv"
+b_path = "../data/1036350_b.csv"
+s_path = "../data/1036350_s.csv"
+t_path = "../data/1036350_TT.csv"
+d_path = "../data/1036350_TT.csv"
+
 
 # Parameter Constants
 MU = 1.0
@@ -112,13 +137,27 @@ def optimal_i_j(path, timetable):
     op_j = None
     for u in P_PLUS:
         for i in N - {DEPOT}:
-            for j in N - {HOME}:
+            for j in N - {HOME, i}:
                 if path[i][j] == 1:
                     temp_c1 = eval_c1(timetable, i, u, j)
                     if temp_c1 < min_c1:
                         min_c1 = temp_c1
                         op_i = i
                         op_j = j
+    return op_i, op_j
+
+def optimal_i_j_drop(path, timetable, u, u_d):
+    min_c1 = float('inf')
+    op_i = None
+    op_j = None
+    for i in N - {DEPOT, u_d}:
+        for j in N - {HOME, u, i, u_d}:
+            if path[i][j] == 1:
+                temp_c1 = eval_c1(timetable, i, u_d, j)
+                if temp_c1 < min_c1:
+                    min_c1 = temp_c1
+                    op_i = i
+                    op_j = j
     return op_i, op_j
 
 def optimal_u(path, timetable, i, j):
@@ -189,11 +228,25 @@ def insertion():
 
                     if T[node] >= T[j]:
                         new_T[node] = T[node] + dT
-                i_d, j_d = optimal_i_j(temp_path, new_T)
-                T = copy_timetable(new_T)
-                P_PLUS.remove(u)
-                P_MINUS.remove(u_d)
-                inserted = True
+                i_d, j_d = optimal_i_j_drop(temp_path, new_T, u, u_d)
+                if (i_d, j_d) != (None, None):
+                    temp_path[i_d][j_d] = 0
+                    temp_path[i_d][u_d] = 1
+                    temp_path[u_d][j_d] = 1
+                    new_T_d = copy_timetable(new_T)
+                    new_T_d[u_d] = max(a[u_d], new_T[i_d] + s[i_d] + t[i_d][u_d])
+                    new_T_d[j_d] = max(a[j_d], new_T_d[u_d] + s[u_d] + t[u_d][j_d])
+                    dT = new_T_d[j_d] - new_T[j_d]
+                    for node in range(len(new_T_d)):
+                        # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
+
+                        if new_T[node] >= new_T[j_d]:
+                            new_T_d[node] = new_T[node] + dT
+                    path = copy_path(temp_path)
+                    T = copy_timetable(new_T_d)
+                    P_PLUS.remove(u)
+                    P_MINUS.remove(u_d)
+                    inserted = True
         if not inserted:
             used_path = copy_path(path)
             used_timetable = copy_timetable(T)
