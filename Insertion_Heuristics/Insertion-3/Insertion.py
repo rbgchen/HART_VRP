@@ -12,21 +12,21 @@ t_path = "../data/t.csv"
 d_path = "../data/d.csv"
 """
 
-
+"""
 a_path = "../data/1002724_a.csv"
 b_path = "../data/1002724_b_tight_tw.csv"
 s_path = "../data/1002724_s_short.csv"
 t_path = "../data/1002724_TT.csv"
 d_path = "../data/1002724_TT.csv"
-
-
 """
+
+
 a_path = "../data/1035989_a.csv"
 b_path = "../data/1035989_b.csv"
 s_path = "../data/1035989_s.csv"
 t_path = "../data/1035989_TT.csv"
 d_path = "../data/1035989_TT.csv"
-"""
+
 
 """
 a_path = "../data/1036350_a.csv"
@@ -49,6 +49,9 @@ b = csv_to_array(b_path)
 s = csv_to_array(s_path)
 t = csv_to_array(t_path)
 d = csv_to_array(d_path)
+for i in range(len(t)):
+    for j in range(len(t[i])):
+        t[i][j] /= 60
 HOME = 0
 P_PLUS = set(range(1, int((len(a)-2)/2) + 1))
 P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
@@ -188,9 +191,20 @@ def optimum_c_2_drop(path, timetable, request):
     c_2_d = float('-inf')
     path_d = None
     T_d = None
-    N_d = N - (P_PLUS | P_MINUS)  # Ensures that the dropoff comes AFTER the pickup
+    source = 0
+    destination = 0
+    N_d = set({})
+    while source != u:
+        for link in path[source]:
+            if link == 1:
+                N_d |= {source}
+                source = destination
+                destination = 0
+                break
+            destination += 1
+    N_d = N - N_d
     for i in N_d | {u}:
-        for j in N_d | {DEPOT}:
+        for j in (N_d | {DEPOT}) - {i}:
             if path[i][j] == 1:
                 c_2_d_temp, path_d_temp, T_d_temp = eval_c_2(path, timetable, i, u_d, j)
 
@@ -202,31 +216,29 @@ def optimum_c_2_drop(path, timetable, request):
     return c_2_d, path_d, T_d
 
 
-def clean_timetable(timetable):
+def clean_timetable(path):
     """
     Cleans the timetable by sorting it, packing it into a dictionary, and tightening the schedule.
-    :param timetable: The original timetable.
+    :param path: The final path
     :return: The cleaned timetable.
     """
-    new_timetable = {}
-    previous_node = None
-    wait_time = 0
-    for i in range(len(timetable)):
-        if timetable[i] != float('-inf'):
-
-            new_timetable[i] = [timetable[i]]
-
-            if i != 0:
-                wait_time = a[i] - (new_timetable[previous_node][0] + s[previous_node] + t[previous_node][i])
-
-                if wait_time < 0:  # Accounts for negative wait times
-                    wait_time = 0.0
-
-            new_timetable[i].append(wait_time)
-            previous_node = i
-    key_one = min(new_timetable, key=new_timetable.get)  # Grabs the second smallest time in the table
-    new_timetable[0] = [timetable[key_one] - t[0][key_one], 0.0]
-    new_timetable = dict(sorted(new_timetable.items(), key=lambda item: item[1]))
+    new_timetable = {0: [0, 0]}
+    source = 0
+    destination = 0
+    while source != DEPOT:
+        for i in path[source]:
+            if i == 1:
+                new_timetable[destination] = [max(a[destination], new_timetable[source][0] + s[source] + t[source][destination]),
+                                         None]
+                new_timetable[destination][1] = max(0, a[destination] - (new_timetable[source][0] + s[source]
+                                                                    + t[source][destination]))
+                source = destination
+                destination = 0
+                break
+            destination += 1
+    keys = list(new_timetable.keys())
+    new_timetable[0][0] = new_timetable[keys[1]][0] - t[0][keys[1]]
+    new_timetable[keys[1]][1] = 0
     return new_timetable
 
 
@@ -265,7 +277,7 @@ def insertion():
     final_times.append(T)
 
     for i in range(len(final_times)):
-        final_times[i] = clean_timetable(final_times[i])
+        final_times[i] = clean_timetable(final_paths[i])
 
     results_to_csv(N, final_paths, final_times)
     print('Results have been written to ../results.csv.')
