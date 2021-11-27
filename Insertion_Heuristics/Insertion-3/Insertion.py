@@ -119,7 +119,7 @@ def eval_c_2(path, timetable, i, u, j):
     for node in range(len(new_T)):
         # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
 
-        if timetable[node] >= timetable[j]:
+        if timetable[node] > timetable[j]:
             new_T[node] = timetable[node] + c_12
 
         if new_T[node] > b[node]:
@@ -188,7 +188,7 @@ def optimum_c_2_drop(path, timetable, request):
     c_2_d = float('-inf')
     path_d = None
     T_d = None
-    N_d = N - (N - (P_PLUS | P_MINUS))  # Ensures that the dropoff comes AFTER the pickup
+    N_d = N - (P_PLUS | P_MINUS)  # Ensures that the dropoff comes AFTER the pickup
     for i in N_d | {u}:
         for j in N_d | {DEPOT}:
             if path[i][j] == 1:

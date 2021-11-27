@@ -5,6 +5,7 @@ from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
 
 # Path constants
+
 """
 a_path = "../data/a.csv"
 b_path = "../data/b.csv"
@@ -13,21 +14,21 @@ t_path = "../data/t.csv"
 d_path = "../data/d.csv"
 """
 
-
+"""
 a_path = "../data/1002724_a.csv"
 b_path = "../data/1002724_b_tight_tw.csv"
 s_path = "../data/1002724_s_short.csv"
 t_path = "../data/1002724_TT.csv"
 d_path = "../data/1002724_TT.csv"
-
-
 """
+
+
 a_path = "../data/1035989_a.csv"
 b_path = "../data/1035989_b.csv"
 s_path = "../data/1035989_s.csv"
 t_path = "../data/1035989_TT.csv"
 d_path = "../data/1035989_TT.csv"
-"""
+
 
 """
 a_path = "../data/1036350_a.csv"
@@ -49,6 +50,9 @@ b = csv_to_array(b_path)
 s = csv_to_array(s_path)
 t = csv_to_array(t_path)
 d = csv_to_array(d_path)
+for i in range(len(t)):
+    for j in range(len(t[i])):
+        t[i][j] /= 60
 HOME = 0
 P_PLUS = set(range(1, int((len(a)-2)/2) + 1))
 P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
@@ -119,7 +123,7 @@ def eval_c_2(path, timetable, i, u, j):
     for node in range(len(new_T)):
         # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
 
-        if timetable[node] >= timetable[j]:
+        if timetable[node] > timetable[j]:
             new_T[node] = timetable[node] + c_12
 
         if new_T[node] > b[node]:
@@ -188,7 +192,7 @@ def optimum_c_2_drop(path, timetable, request):
     c_2_d = float('-inf')
     path_d = None
     T_d = None
-    N_d = N - (N - (P_PLUS | P_MINUS))  # Ensures that the dropoff comes AFTER the pickup
+    N_d = N - (P_PLUS | P_MINUS)  # Ensures that the dropoff comes AFTER the pickup
     for i in N_d | {u}:
         for j in N_d | {DEPOT}:
             if path[i][j] == 1:
