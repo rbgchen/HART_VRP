@@ -3,6 +3,7 @@ Insertion heuristic for the first way to calculate c2, minimizing push forward a
 """
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv
+from results_to_csv import record_metrics
 
 # Path constants
 
@@ -280,7 +281,8 @@ def insertion():
         final_times[i] = clean_timetable(final_paths[i])
 
     results_to_csv(N, final_paths, final_times)
-    print('Results have been written to results.csv.')
+    record_metrics(d, t, s, DEPOT, final_paths, final_times)
+    print('Results have been written to results.csv and metrics.csv.')
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@ Converts results (path and timetable) into a csv
 """
 from os.path import exists
 import csv
+from metrics import get_route_metrics
 
 
 def results_to_csv(nodes, paths, timetables):
@@ -34,3 +35,22 @@ def results_to_csv(nodes, paths, timetables):
         writer = csv.writer(results_file)
         writer.writerow(fields)
         writer.writerows(results)
+
+def record_metrics(d, t, s, depot, paths, timetables):
+    fields = ['Vehicle #', 'R(d)', 'R(t)', 'Wait Time']
+    path_metrics = []
+    for i in range(len(paths)):
+        row = [i+1]
+        row.extend(get_route_metrics(d, t, s, depot, paths[i], timetables[i]))
+        print(row)
+        path_metrics.append(row)
+    if exists('../metrics.csv'):
+        mode = 'w'
+
+    else:
+        mode = 'a'
+
+    with open('../metrics.csv', mode, newline='') as metrics_file:
+        writer = csv.writer(metrics_file)
+        writer.writerow(fields)
+        writer.writerows(path_metrics)
