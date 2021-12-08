@@ -37,7 +37,7 @@ def results_to_csv(nodes, paths, timetables):
         writer.writerows(results)
 
 def record_metrics(d, t, s, depot, paths, timetables):
-    fields = ['Vehicle #', 'R(d)', 'R(t)', 'Wait Time']
+    fields = ['Vehicle #', 'R(d)', 'R(t)', 'Wait Time', 'Avg. Occupancy']
     path_metrics = []
     for i in range(len(paths)):
         row = [i+1]
