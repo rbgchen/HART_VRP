@@ -21,13 +21,11 @@ t_path = "../data/1002724_TT.csv"
 d_path = "../data/1002724_TT.csv"
 """
 
-
 a_path = "../data/1035989_a.csv"
 b_path = "../data/1035989_b.csv"
 s_path = "../data/1035989_s.csv"
 t_path = "../data/1035989_TT.csv"
 d_path = "../data/1035989_TT.csv"
-
 
 """
 a_path = "../data/1036350_a.csv"
@@ -102,9 +100,18 @@ def eval_c1(timetable, source, u, destination):
     return c_1
 
 
-def eval_c2(path, timetable, i, u, j):
-    total_distance = d[i][u] + d[u][j]
-    total_time = t[i][u] + t[u][j]
+def eval_c2(path, timetable, source, u, destination):
+    """
+    Computes the c2 given a path, timetable, source, request, and destination.
+    :param path: The current path being analyzed.
+    :param timetable: The current timetable being analyzed.
+    :param source: The source node being used.
+    :param u: The request node being inserted.
+    :param destination: The destination node being used.
+    :return: The calculated c2 value.
+    """
+    total_distance = d[source][u] + d[u][destination]
+    total_time = t[source][u] + t[u][destination]
     for row in range(len(path)):
         for col in range(len(path[row])):
             total_distance += path[row][col] * d[row][col]
@@ -116,21 +123,36 @@ def eval_c2(path, timetable, i, u, j):
 
 
 def optimal_i_j(path, timetable):
+    """
+    Finds the optimal i and j given a path and a timetable.
+    :param path: The path being used.
+    :param timetable: The timetable being used.
+    :return: The optimal i and j.
+    """
     min_c1 = float('inf')
     op_i = None
     op_j = None
     for u in P_PLUS:
-        for i in N - {DEPOT}:
-            for j in N - {HOME, i}:
-                if path[i][j] == 1:
-                    temp_c1 = eval_c1(timetable, i, u, j)
+        for source in N - {DEPOT}:
+            for destination in N - {HOME, source}:
+                if path[source][destination] == 1:
+                    temp_c1 = eval_c1(timetable, source, u, destination)
                     if temp_c1 < min_c1:
                         min_c1 = temp_c1
-                        op_i = i
-                        op_j = j
+                        op_i = source
+                        op_j = destination
     return op_i, op_j
 
+
 def optimal_i_j_drop(path, timetable, u, u_d):
+    """
+    Finds the optimal i and j for a specific request and dropoff node.
+    :param path: The current path being used.
+    :param timetable: The current timetable being used.
+    :param u: The request being inserted.
+    :param u_d: The dropoff for the request being inserted.
+    :return: The optimal i and j.
+    """
     min_c1 = float('inf')
     op_i = None
     op_j = None
@@ -146,21 +168,30 @@ def optimal_i_j_drop(path, timetable, u, u_d):
                 break
             destination += 1
     N_d = N - N_d
-    for i in N_d | {u}:
-        for j in (N_d | {DEPOT}) - {i}:
-            if path[i][j] == 1:
-                temp_c1 = eval_c1(timetable, i, u_d, j)
+    for source in N_d | {u}:
+        for destination in (N_d | {DEPOT}) - {source}:
+            if path[source][destination] == 1:
+                temp_c1 = eval_c1(timetable, source, u_d, destination)
                 if temp_c1 < min_c1:
                     min_c1 = temp_c1
-                    op_i = i
-                    op_j = j
+                    op_i = source
+                    op_j = destination
     return op_i, op_j
 
-def optimal_u(path, timetable, i, j):
+
+def optimal_u(path, timetable, source, destination):
+    """
+    Finds an optimal request to insert into a path and timetable.
+    :param path: The current path being used.
+    :param timetable: The current timetable being used.
+    :param source: The source node being analyzed.
+    :param destination: The destination node being analyzed.
+    :return: The optimal request to be inserted.
+    """
     min_c2 = float('inf')
     op_u = None
     for u in P_PLUS:
-        temp_c2 = eval_c2(path, timetable, i, u, j)
+        temp_c2 = eval_c2(path, timetable, source, u, destination)
         if temp_c2 < min_c2:
             min_c2 = temp_c2
             op_u = u
@@ -177,12 +208,13 @@ def clean_timetable(path):
     source = 0
     destination = 0
     while source != DEPOT:
-        for i in path[source]:
-            if i == 1:
-                new_timetable[destination] = [max(a[destination], new_timetable[source][0] + s[source] + t[source][destination]),
-                                         None]
+        for node in path[source]:
+            if node == 1:
+                new_timetable[destination] = [
+                    max(a[destination], new_timetable[source][0] + s[source] + t[source][destination]),
+                    None]
                 new_timetable[destination][1] = max(0, a[destination] - (new_timetable[source][0] + s[source]
-                                                                    + t[source][destination]))
+                                                                         + t[source][destination]))
                 source = destination
                 destination = 0
                 break
@@ -194,6 +226,9 @@ def clean_timetable(path):
 
 
 def insertion():
+    """
+    The main insertion method.
+    """
     final_paths = []
     final_times = []
 
@@ -204,23 +239,23 @@ def insertion():
 
     while len(updated_P) != 0:
         inserted = False
-        i, j = optimal_i_j(path, T)
-        if (i, j) != (None, None):
-            u = optimal_u(path, T, i, j)
+        i_best, j_best = optimal_i_j(path, T)
+        if (i_best, j_best) != (None, None):
+            u = optimal_u(path, T, i_best, j_best)
             if u is not None:
                 temp_path = copy_path(path)
-                temp_path[i][j] = 0
-                temp_path[i][u] = 1
-                temp_path[u][j] = 1
+                temp_path[i_best][j_best] = 0
+                temp_path[i_best][u] = 1
+                temp_path[u][j_best] = 1
                 u_d = u + int(len(N) / 2) - 1
                 new_T = copy_timetable(T)
-                new_T[u] = max(a[u], T[i] + s[i] + t[i][u])
-                new_T[j] = max(a[j], new_T[u] + s[u] + t[u][j])
-                dT = new_T[j] - T[j]
+                new_T[u] = max(a[u], T[i_best] + s[i_best] + t[i_best][u])
+                new_T[j_best] = max(a[j_best], new_T[u] + s[u] + t[u][j_best])
+                dT = new_T[j_best] - T[j_best]
                 for node in range(len(new_T)):
                     # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
 
-                    if T[node] > T[j]:
+                    if T[node] > T[j_best]:
                         new_T[node] = T[node] + dT
                 i_d, j_d = optimal_i_j_drop(temp_path, new_T, u, u_d)
                 if (i_d, j_d) != (None, None):
@@ -250,11 +285,11 @@ def insertion():
             T = copy_timetable(INITIAL_T)
             updated_P = P_PLUS.union(P_MINUS)
 
-    for i in range(len(final_times)):
-        final_times[i] = clean_timetable(final_paths[i])
+    for i_best in range(len(final_times)):
+        final_times[i_best] = clean_timetable(final_paths[i_best])
 
     results_to_csv(N, final_paths, final_times)
-    print('Results have been written to results.csv.')
+    print('Results have been written to results.csv and metrics.csv.')
 
 
 if __name__ == '__main__':

@@ -36,13 +36,22 @@ def results_to_csv(nodes, paths, timetables):
         writer.writerow(fields)
         writer.writerows(results)
 
+
 def record_metrics(d, t, s, depot, paths, timetables):
+    """
+    Records the metrics in the metrics.csv file.
+    :param d: The travel distance matrix.
+    :param t: The travel time matrix.
+    :param s: The request durations.
+    :param depot: The depot node.
+    :param paths: The list of used paths.
+    :param timetables: The list of used timetables.
+    """
     fields = ['Vehicle #', 'R(d)', 'R(t)', 'Wait Time', 'Avg. Occupancy']
     path_metrics = []
     for i in range(len(paths)):
         row = [i+1]
         row.extend(get_route_metrics(d, t, s, depot, paths[i], timetables[i]))
-        print(row)
         path_metrics.append(row)
     if exists('../metrics.csv'):
         mode = 'w'
