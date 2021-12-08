@@ -23,13 +23,11 @@ t_path = "../data/1002724_TT.csv"
 d_path = "../data/1002724_TT.csv"
 """
 
-
 a_path = "../data/1035989_a.csv"
 b_path = "../data/1035989_b.csv"
 s_path = "../data/1035989_s.csv"
 t_path = "../data/1035989_TT.csv"
 d_path = "../data/1035989_TT.csv"
-
 
 """
 a_path = "../data/1036350_a.csv"
@@ -55,35 +53,13 @@ for i in range(len(t)):
     for j in range(len(t[i])):
         t[i][j] /= 60
 HOME = 0
-P_PLUS = set(range(1, int((len(a)-2)/2) + 1))
+P_PLUS = set(range(1, int((len(a) - 2) / 2) + 1))
 P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
 DEPOT = max(P_MINUS) + 1
 P = P_PLUS | P_MINUS
 N = {HOME} | P | {DEPOT}
 INITIAL_PATH = [[0 if (i, j) != (HOME, DEPOT) else 1 for j in N] for i in N]
 INITIAL_T = [-float('inf') if i != HOME and i != DEPOT else 0 for i in N]
-
-
-def print_path(path):
-    """
-    Prints a path with each i in a different row
-    :param path: The path to be printed
-    """
-    for i in range(len(path)):
-        print(path[i])  # Prints each row individually
-    print()  # Prints a new line
-
-
-def print_timetable(timetable):
-    """
-    Prints a timetable with start times for each node
-    :param timetable: The timetable to be printed
-    """
-    print('u\tTᵤ\twait time')
-    for i in timetable:
-        print(f'{i}\t{timetable[i][0]}' + (3 - len(str(timetable[i][0])) + 4) * ' ' + f'{timetable[i][1]}')
-        # Prints the node, followed by a tab, and the time of that node
-    print()  # Prints a new line
 
 
 def copy_path(path):
@@ -101,43 +77,43 @@ def copy_timetable(timetable):
     :param timetable: The timetable to be copied
     :return: The copied timetable
     """
-    return [timetable[i] for i in range(len(timetable))]
+    return [timetable[index] for index in range(len(timetable))]
 
 
-def eval_c_2(path, timetable, i, u, j):
+def eval_c_2(path, timetable, source, u, destination):
     """
     Calculates the c_2, along with the new path and timetable given
     a current timetable, path, source, insertion, and destination
     :param path: The current path being used
     :param timetable: The current timetable being used
-    :param i: The source node
+    :param source: The source node
     :param u: The node to be inserted
-    :param j: The destination node
+    :param destination: The destination node
     :return: The c2, new path, and timetable after insertion of u. Will return -inf, None, None if invalid insertion.
     """
     new_path = copy_path(path)
     new_T = copy_timetable(timetable)
-    new_T[u] = max(a[u], timetable[i] + s[i] + t[i][u])
-    new_T[j] = max(a[j], new_T[u] + s[u] + t[u][j])
-    c_12 = new_T[j] - timetable[j]
+    new_T[u] = max(a[u], timetable[source] + s[source] + t[source][u])
+    new_T[destination] = max(a[destination], new_T[u] + s[u] + t[u][destination])
+    c_12 = new_T[destination] - timetable[destination]
 
     for node in range(len(new_T)):
         # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
 
-        if timetable[node] > timetable[j]:
+        if timetable[node] > timetable[destination]:
             new_T[node] = timetable[node] + c_12
 
         if new_T[node] > b[node]:
             return float('-inf'), None, None
 
-    c_11 = d[i][u] + d[u][j] - MU * d[i][j]
+    c_11 = d[source][u] + d[u][destination] - MU * d[source][destination]
     c_1 = ALPHA_1 * c_11 + ALPHA_2 * c_12
     c_2 = LAMBDA * d[0][u] - c_1
 
     # Inserts new node
-    new_path[i][j] = 0
-    new_path[i][u] = 1
-    new_path[u][j] = 1
+    new_path[source][destination] = 0
+    new_path[source][u] = 1
+    new_path[u][destination] = 1
 
     return c_2, new_path, new_T
 
@@ -158,10 +134,10 @@ def optimum_c_2(path, timetable):
     for u in P_PLUS:  # Iterates through each pickup node
         u_d = u + int(len(N) / 2) - 1
 
-        for i in N - {u, DEPOT}:
-            for j in N - {u, HOME}:
-                if path[i][j] == 1:
-                    c_2_p_temp, path_p_temp, T_p_temp = eval_c_2(path, timetable, i, u, j)
+        for source in N - {u, DEPOT}:
+            for destination in N - {u, HOME}:
+                if path[source][destination] == 1:
+                    c_2_p_temp, path_p_temp, T_p_temp = eval_c_2(path, timetable, source, u, destination)
 
                     if c_2_p_temp != float('-inf'):
                         c_2_d_temp, path_d_temp, T_d_temp = optimum_c_2_drop(path_p_temp, T_p_temp, u)
@@ -205,10 +181,10 @@ def optimum_c_2_drop(path, timetable, request):
                 break
             destination += 1
     N_d = N - N_d
-    for i in N_d | {u}:
-        for j in (N_d | {DEPOT}) - {i}:
-            if path[i][j] == 1:
-                c_2_d_temp, path_d_temp, T_d_temp = eval_c_2(path, timetable, i, u_d, j)
+    for source in N_d | {u}:
+        for destination in (N_d | {DEPOT}) - {source}:
+            if path[source][destination] == 1:
+                c_2_d_temp, path_d_temp, T_d_temp = eval_c_2(path, timetable, source, u_d, destination)
                 if c_2_d_temp > c_2_d:
                     c_2_d = c_2_d_temp
                     path_d = path_d_temp
@@ -227,12 +203,13 @@ def clean_timetable(path):
     source = 0
     destination = 0
     while source != DEPOT:
-        for i in path[source]:
-            if i == 1:
-                new_timetable[destination] = [max(a[destination], new_timetable[source][0] + s[source] + t[source][destination]),
-                                         None]
+        for link in path[source]:
+            if link == 1:
+                new_timetable[destination] = [
+                    max(a[destination], new_timetable[source][0] + s[source] + t[source][destination]),
+                    None]
                 new_timetable[destination][1] = max(0, a[destination] - (new_timetable[source][0] + s[source]
-                                                                    + t[source][destination]))
+                                                                         + t[source][destination]))
                 source = destination
                 destination = 0
                 break
@@ -277,8 +254,8 @@ def insertion():
     final_paths.append(path)
     final_times.append(T)
 
-    for i in range(len(final_times)):
-        final_times[i] = clean_timetable(final_paths[i])
+    for index in range(len(final_times)):
+        final_times[index] = clean_timetable(final_paths[index])
 
     results_to_csv(N, final_paths, final_times)
     record_metrics(d, t, s, DEPOT, final_paths, final_times)

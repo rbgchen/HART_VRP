@@ -63,28 +63,6 @@ INITIAL_PATH = [[0 if (i, j) != (HOME, DEPOT) else 1 for j in N] for i in N]
 INITIAL_T = [-float('inf') if i != HOME and i != DEPOT else 0 for i in N]
 
 
-def print_path(path):
-    """
-    Prints a path with each i in a different row
-    :param path: The path to be printed
-    """
-    for i in range(len(path)):
-        print(path[i])  # Prints each row individually
-    print()  # Prints a new line
-
-
-def print_timetable(timetable):
-    """
-    Prints a timetable with start times for each node
-    :param timetable: The timetable to be printed
-    """
-    print('u\tTᵤ\twait time')
-    for i in timetable:
-        print(f'{i}\t{timetable[i][0]}' + (3 - len(str(timetable[i][0])) + 4) * ' ' + f'{timetable[i][1]}')
-        # Prints the node, followed by a tab, and the time of that node
-    print()  # Prints a new line
-
-
 def copy_path(path):
     """
     Creates a copy of the path that does not link to the original since the .copy() method is malfunctioning.
@@ -100,19 +78,22 @@ def copy_timetable(timetable):
     :param timetable: The timetable to be copied
     :return: The copied timetable
     """
-    return [timetable[i] for i in range(len(timetable))]
+    return [timetable[index] for index in range(len(timetable))]
 
 
-def eval_c1(timetable, i, u, j):
+def eval_c1(timetable, source, u, destination):
+    """
+    Evaluates the c1 given the source, request, and destination in the path. This c1 is returned and used to see if
+    """
     new_T = copy_timetable(timetable)
-    new_T[u] = max(a[u], timetable[i] + s[i] + t[i][u])
-    new_T[j] = max(a[j], new_T[u] + s[u] + t[u][j])
-    c_12 = new_T[j] - timetable[j]
-    c_11 = d[i][u] + d[u][j] - MU * d[i][j]
+    new_T[u] = max(a[u], timetable[source] + s[source] + t[source][u])
+    new_T[destination] = max(a[destination], new_T[u] + s[u] + t[u][destination])
+    c_12 = new_T[destination] - timetable[destination]
+    c_11 = d[source][u] + d[u][destination] - MU * d[source][destination]
     for node in range(len(new_T)):
         # Pushes forward the times of each node after insertion and checks if it exceeds latest time.
 
-        if timetable[node] > timetable[j]:
+        if timetable[node] > timetable[destination]:
             new_T[node] = timetable[node] + c_12
 
         if new_T[node] > b[node]:
