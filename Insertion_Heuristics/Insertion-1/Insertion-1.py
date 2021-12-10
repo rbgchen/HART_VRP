@@ -2,8 +2,7 @@
 Insertion heuristic for the first way to calculate c2, minimizing push forward and wait times.
 """
 from csv_to_list import csv_to_array
-from results_to_csv import results_to_csv
-from results_to_csv import record_metrics
+from results_to_csv import results_to_csv, record_metrics
 
 # Path constants
 
@@ -52,6 +51,7 @@ d = csv_to_array(d_path)
 for i in range(len(t)):
     for j in range(len(t[i])):
         t[i][j] /= 60
+
 HOME = 0
 P_PLUS = set(range(1, int((len(a) - 2) / 2) + 1))
 P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
@@ -241,6 +241,8 @@ def insertion():
         if c2 == float('-inf'):  # If there is no optimum, use a new vehicle and create a new path.
             used_path = copy_path(path)
             used_T = copy_timetable(T)
+            if used_path == INITIAL_PATH:
+                break
             final_paths.append(used_path)
             final_times.append(used_T)
             path = copy_path(INITIAL_PATH)
@@ -260,6 +262,8 @@ def insertion():
     results_to_csv(N, final_paths, final_times)
     record_metrics(d, t, s, DEPOT, final_paths, final_times)
     print('Results have been written to results.csv and metrics.csv.')
+    if len(updated_P) > 0:
+        print(f'Uninserted requests: {updated_P}')
 
 
 if __name__ == '__main__':
