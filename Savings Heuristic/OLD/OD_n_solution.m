@@ -4,7 +4,7 @@ function [case1,case2,case3,present_n_tour]=OD_n_solution(this_i,this_j)
 global c d solution solution_schedule num_tours present_n_tour dload_matrix
 global HOME_EARLY HOME_LATE ACT_EARLY ACT_LATE n V HM ACT_DUR
 global AT WT T PF tt s N
-global initial_schedule counter_AT tour_sched put_aside
+global initial_schedule counter_AT tour_sched
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 present_n_tour = [];

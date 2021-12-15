@@ -4,7 +4,7 @@ function case3_doit(this_i,this_j)
 global c d solution solution_schedule num_tours present_n_tour dload_matrix
 global HOME_EARLY HOME_LATE ACT_EARLY ACT_LATE n V HM ACT_DUR
 global AT WT T PF tt s N OD2Route
-global initial_schedule counter_AT tour_sched put_aside
+global initial_schedule counter_AT tour_sched
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %find 2 routes with the 2 points
@@ -80,55 +80,20 @@ if (i_is_O_first==1) %then j is in second
             %check schedule feasibility
             %insert_segment = [candidate_schedule(1,1),insert_this,candidate_schedule(2,1)]; %x-i-j-x
             insert_this = second_candidate_schedule(1:end-1,1);
-            %insert_segment =[insert_this',candidate_schedule(2:3,1)];
-            insert_segment =[insert_this;candidate_schedule(2,1)]';
-            
-            %insert_this = second_candidate_schedule(2:end,1);
-            %insert_segment =[candidate_schedule(end-1,1),insert_this'];
-            
-            
-            %insert_segment = [candidate_schedule(1,1),w,candidate_schedule(2,1)]; %x-i-j-x
-            
-            %note: insert_segment should show the updates segment to check.
-            
+            insert_segment =[insert_this',candidate_schedule(2:3,1)];
             [make_new_tour,new_schedule]=schedule_insertion_v2(insert_segment,candidate_schedule);
              
             %we passed update
             if (make_new_tour == 0)
             
                 %get rid of old routes
-                %solution{route_nums(1)}=[];
-                %solution{route_nums(2)}=[];
-                %solution_schedule{route_nums(1)}=[];
-                %solution_schedule{route_nums(2)}=[];
-                
-                %solution(route_nums(1))=[];
-                %solution(route_nums(2))=[];
-                %solution_schedule(route_nums(1))=[];
-                %solution_schedule(route_nums(2))=[];
-                
-                if (route_nums(1)<=route_nums(2))
-                    
-                    solution(route_nums(1))=[];
-                    solution(route_nums(2)-1)=[];
-                    
-                    solution_schedule(route_nums(1))=[];
-                    solution_schedule(route_nums(2)-1)=[];
-                    
-                else
-                    solution(route_nums(2))=[];
-                    solution(route_nums(1)-1)=[];
-                    
-                    solution_schedule(route_nums(2))=[];
-                    solution_schedule(route_nums(1)-1)=[];
-                    
-                end
+                solution{route_nums(1)}=[];
+                solution{route_nums(2)}=[];
+                solution_schedule{route_nums(1)}=[];
+                solution_schedule{route_nums(2)}=[];
                         
                 solution{end+1} = new_route; 
-                solution_schedule{end+1}=new_schedule;
-            else
-                %put_aside = [put_aside;[this_i,this_j]];
-                put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+                solution_schedule{end+1}=new_schedule; 
             
             end
             
@@ -164,49 +129,17 @@ if (i_is_O_first==1) %then j is in second
             if (make_new_tour == 0)
             
                 %get rid of old routes
-                %solution{route_nums(1)}=[];
-                %solution{route_nums(2)}=[];
-                %solution_schedule{route_nums(1)}=[];
-                %solution_schedule{route_nums(2)}=[];
-                
-                %if (route_nums(1)<=route_nums(2))
-                %    solution(route_nums(1))=[];
-                %    solution(route_nums(2)-1)=[];
-                %else
-                %    solution(route_nums(2))=[];
-                %    solution(route_nums(1)-1)=[];
-                %end
-                %solution_schedule(route_nums(1))=[];
-                %solution_schedule(route_nums(2))=[];
-                
-                 if (route_nums(1)<=route_nums(2))
-                    
-                    solution(route_nums(1))=[];
-                    solution(route_nums(2)-1)=[];
-                    
-                    solution_schedule(route_nums(1))=[];
-                    solution_schedule(route_nums(2)-1)=[];
-                    
-                else
-                    solution(route_nums(2))=[];
-                    solution(route_nums(1)-1)=[];
-                    
-                    solution_schedule(route_nums(2))=[];
-                    solution_schedule(route_nums(1)-1)=[];
-                    
-                end
+                solution{route_nums(1)}=[];
+                solution{route_nums(2)}=[];
+                solution_schedule{route_nums(1)}=[];
+                solution_schedule{route_nums(2)}=[];
                         
                 solution{end+1} = new_route; 
                 solution_schedule{end+1}=new_schedule; 
-            else
-                %put_aside = [put_aside;[this_i,this_j]];
-                put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+            
             end
             
         end
-    else
-        %put_aside = [put_aside;[this_i,this_j]];
-        put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
     end
 end
 
@@ -265,40 +198,14 @@ if (j_is_O_first==1) %then i is in second
             if (make_new_tour == 0)
             
                 %get rid of old routes
-                %solution{route_nums(1)}=[];
-                %solution{route_nums(2)}=[];
-                %solution_schedule{route_nums(1)}=[];
-                %solution_schedule{route_nums(2)}=[];
-                
-                %solution(route_nums(1))=[];
-                %solution(route_nums(2))=[];
-                %solution_schedule(route_nums(1))=[];
-                %solution_schedule(route_nums(2))=[];
-                
-                
-                if (route_nums(1)<=route_nums(2))
-                    
-                    solution(route_nums(1))=[];
-                    solution(route_nums(2)-1)=[];
-                    
-                    solution_schedule(route_nums(1))=[];
-                    solution_schedule(route_nums(2)-1)=[];
-                    
-                else
-                    solution(route_nums(2))=[];
-                    solution(route_nums(1)-1)=[];
-                    
-                    solution_schedule(route_nums(2))=[];
-                    solution_schedule(route_nums(1)-1)=[];
-                    
-                end
-                
+                solution{route_nums(1)}=[];
+                solution{route_nums(2)}=[];
+                solution_schedule{route_nums(1)}=[];
+                solution_schedule{route_nums(2)}=[];
                         
                 solution{end+1} = new_route; 
-                solution_schedule{end+1}=new_schedule;
-            else
-                %put_aside = [put_aside;[this_i,this_j]];
-                put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+                solution_schedule{end+1}=new_schedule; 
+            
             end
             
         end
@@ -334,46 +241,19 @@ if (j_is_O_first==1) %then i is in second
             if (make_new_tour == 0)
             
                 %get rid of old routes
-                %solution{route_nums(1)}=[];
-                %solution{route_nums(2)}=[];
-                %solution_schedule{route_nums(1)}=[];
-                %solution_schedule{route_nums(2)}=[];
-                
-                if (route_nums(1)<=route_nums(2))
-                    
-                    solution(route_nums(1))=[];
-                    solution(route_nums(2)-1)=[];
-                    
-                    solution_schedule(route_nums(1))=[];
-                    solution_schedule(route_nums(2)-1)=[];
-                    
-                else
-                    solution(route_nums(2))=[];
-                    solution(route_nums(1)-1)=[];
-                    
-                    solution_schedule(route_nums(2))=[];
-                    solution_schedule(route_nums(1)-1)=[];
-                    
-                end
-                
-                %solution(route_nums(1),route_nums(2))=[];
-                %solution(route_nums(1))=[];
-                %solution(route_nums(2)-1)=[]; %minus 1 since we just lost route_nums(1)
-                %solution_schedule(1,route_nums(1))=[];
-                %solution_schedule(1,route_nums(2))=[];
+                solution{route_nums(1)}=[];
+                solution{route_nums(2)}=[];
+                solution_schedule{route_nums(1)}=[];
+                solution_schedule{route_nums(2)}=[];
                         
                 solution{end+1} = new_route; 
-                solution_schedule{end+1}=new_schedule;
-            else
-                %put_aside = [put_aside;[this_i,this_j]];
-                put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+                solution_schedule{end+1}=new_schedule; 
+            
             end
             
             
         end
-    else
-        %put_aside = [put_aside;[this_i,this_j]];
-        put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+        
     end
             
     

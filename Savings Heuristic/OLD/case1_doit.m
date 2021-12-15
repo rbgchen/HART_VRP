@@ -4,7 +4,7 @@ function case1_doit(this_i,this_j)
 global c d solution solution_schedule num_tours present_n_tour dload_matrix
 global HOME_EARLY HOME_LATE ACT_EARLY ACT_LATE n V HM ACT_DUR
 global AT WT T PF tt s N OD2Route
-global initial_schedule counter_AT tour_sched put_aside
+global initial_schedule counter_AT tour_sched
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -37,16 +37,14 @@ candidate_schedule = [candidate_schedule;add_this];
 candidate_tour(u+1,w+1)=1;
 
 %try to insert first link
-%insert_segment = [candidate_schedule(1,1),s(1,1:2)-1,candidate_schedule(end,1)]; %x-i-j-x
-insert_segment = [candidate_schedule(1,1),[this_i,this_j]-1,candidate_schedule(end,1)]; %x-i-j-x
+insert_segment = [candidate_schedule(1,1),s(1,1:2)-1,candidate_schedule(end,1)]; %x-i-j-x
 [make_new_tour,out_schedule]=schedule_insertion_v2(insert_segment,candidate_schedule);
 %initial_schedule = candidate_schedule;
 
 if (make_new_tour == 1)
     
     %if first link cannot be inserted- you will need to give up.
-    %put_aside = [put_aside; [this_i,this_j]];
-    put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+    put_aside = [put_aside; s(1,:)];   
     
 else
     
