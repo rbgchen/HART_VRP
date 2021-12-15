@@ -4,7 +4,7 @@ function case2_doit_v2(this_i,this_j)
 global c d solution solution_schedule num_tours present_n_tour dload_matrix
 global HOME_EARLY HOME_LATE ACT_EARLY ACT_LATE n V HM ACT_DUR
 global AT WT T PF tt s N OD2Route
-global initial_schedule counter_AT tour_sched put_aside
+global initial_schedule counter_AT tour_sched
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %expand the one tour with the one endpoint
@@ -37,8 +37,8 @@ if (i_n_tour == 1) %i is in the tour; insert j
     %you want to insert;
     
     these=[1:n]+n;
-    if(sum(node_insert==these)>=1 && (depot_after==1))
-        %node_insert
+    if(sum(node_insert==these)>=1 && ((depot_after+depot_before)==1))
+        node_insert
         PU_node = node_insert-n; 
         PU_present = sum(candidate_schedule(:,1)==PU_node);
             
@@ -77,7 +77,8 @@ if (i_n_tour == 1) %i is in the tour; insert j
                                
         insert_segment = [candidate_schedule(end-1,1),w,candidate_schedule(end,1)]; %x-i-j-x
         [make_new_tour,new_schedule]=schedule_insertion_v2(insert_segment,candidate_schedule);
-                        
+        
+        
         %we passed update
         if (make_new_tour == 0)
             %remove (i,7)
@@ -90,21 +91,14 @@ if (i_n_tour == 1) %i is in the tour; insert j
             this_route(this_j,2*n+1+1)=1;
             
             solution{route_nums}=this_route;
-            solution_schedule{route_nums}=new_schedule;
-        else
-            %put_aside = [put_aside;[this_i,this_j]];
-            put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+            solution_schedule{route_nums}=new_schedule; 
+            
         end
     end
             
     if (depot_before==1&&C_PD_V==0) %and j is inserted node, this is not possible
         stop=1;
-        %put_aside = [put_aside;[this_i,this_j]];
-        put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
     end
-else
-    %put_aside = [put_aside;[this_i,this_j]];
-    put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
 end
 
 if (j_n_tour == 1)
@@ -122,9 +116,8 @@ if (j_n_tour == 1)
     %you want to insert;
     
     these=[1:n]+n;
-    %if(sum(node_insert==these)>=1 && ((depot_after+depot_before)==1))
-    if(sum(node_insert==these)>=1 && (depot_before==1))
-        %node_insert
+    if(sum(node_insert==these)>=1 && ((depot_after+depot_before)==1))
+        node_insert
         PU_node = node_insert-n; 
         PU_present = sum(candidate_schedule(:,1)==PU_node);
             
@@ -146,7 +139,7 @@ if (j_n_tour == 1)
             
         C_PD_V = 1-((PU_here + PU_order)==2);
     else
-        C_PD_V = 0; %constraint pick-up before dropoff is violated = 0
+        C_PD_V = 0;
     end
     
     
@@ -173,18 +166,11 @@ if (j_n_tour == 1)
             this_route(this_i,this_j)=1;
             
             solution{route_nums}=this_route;
-            solution_schedule{route_nums}=new_schedule;
-        else
-            %put_aside = [put_aside;[this_i,this_j]];
-            put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+            solution_schedule{route_nums}=new_schedule; 
         end
-    else
-        %put_aside = [put_aside;[this_i,this_j]];
-        put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+        
     end
-else
-    %put_aside = [put_aside;[this_i,this_j]];
-    put_aside = [put_aside; s(1,:)];   %if first link cannot be inserted -set aside
+    
 end
 
     

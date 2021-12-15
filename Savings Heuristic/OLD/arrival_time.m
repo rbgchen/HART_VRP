@@ -29,28 +29,17 @@ else
     s_u = ACT_DUR(u);
 end
 
-% %s_w = s(w);
-% switch w
-%     %case {1,2,3,4,5,6}
-%     case {1:n}
-%         %a_w = a(w);
-%         a_w = ACT_EARLY(w);
-%     %case {7}
-%     case {2*n+1}
-%         a_w = HOME_EARLY(2);
-% end
+%s_w = s(w);
+switch w
+    case {1,2,3,4,5,6}
+        %a_w = a(w);
+        a_w = ACT_EARLY(w);
+    case {7}
+        a_w = HOME_EARLY(2);
+end
 %T_u = T(u+1);%previous activity?
 %T_u = T(end);
 %T_u = tour_sched(end,6);
-
-%s_w = s(w);
-if(w>=1&&w<=(2*n)) %case {1,2,3,4,5,6}
-    a_w = ACT_EARLY(w);
-end
-
-if(w==(2*n+1))
-    a_w = HOME_EARLY(2);
-end
 
 T_u = new_schedule(new_schedule(:,1)==u,6);
 tt_uw = tt(N_u,N_w);
