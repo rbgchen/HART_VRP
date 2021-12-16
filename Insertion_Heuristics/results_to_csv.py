@@ -31,7 +31,7 @@ def results_to_csv(nodes, paths, timetables, hh_id):
     else:
         mode = 'a'
 
-    with open(f'../{hh_id}results.csv', mode, newline='') as results_file:
+    with open(f'../{hh_id}_results.csv', mode, newline='') as results_file:
         writer = csv.writer(results_file)
         writer.writerow(fields)
         writer.writerows(results)
