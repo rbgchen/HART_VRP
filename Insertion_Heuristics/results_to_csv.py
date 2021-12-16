@@ -6,7 +6,7 @@ import csv
 from metrics import get_route_metrics
 
 
-def results_to_csv(nodes, paths, timetables):
+def results_to_csv(nodes, paths, timetables, hh_id):
     """
     Converts the results into a csv named resutls.csv and writes the results.
     :param nodes: The nodes in the network (N in Insertion.py)
@@ -25,19 +25,19 @@ def results_to_csv(nodes, paths, timetables):
 
         results.append('')
 
-    if exists('../results.csv'):
+    if exists(f'../{hh_id}_results.csv'):
         mode = 'w'
 
     else:
         mode = 'a'
 
-    with open('../results.csv', mode, newline='') as results_file:
+    with open(f'../{hh_id}results.csv', mode, newline='') as results_file:
         writer = csv.writer(results_file)
         writer.writerow(fields)
         writer.writerows(results)
 
 
-def record_metrics(d, t, s, depot, paths, timetables):
+def record_metrics(d, t, s, depot, paths, timetables, hh_id):
     """
     Records the metrics in the metrics.csv file.
     :param d: The travel distance matrix.
@@ -54,13 +54,13 @@ def record_metrics(d, t, s, depot, paths, timetables):
 
         row.extend(get_route_metrics(d, t, s, depot, paths[i], timetables[i]))
         path_metrics.append(row)
-    if exists('../metrics.csv'):
+    if exists(f'../{hh_id}_metrics.csv'):
         mode = 'w'
 
     else:
         mode = 'a'
 
-    with open('../metrics.csv', mode, newline='') as metrics_file:
+    with open(f'../{hh_id}_metrics.csv', mode, newline='') as metrics_file:
         writer = csv.writer(metrics_file)
         writer.writerow(fields)
         writer.writerows(path_metrics)
