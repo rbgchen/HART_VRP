@@ -3,17 +3,33 @@ Insertion heuristic for the first way to calculate c2, minimizing push forward a
 """
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv, record_metrics
-import sys
 
 # Path constants
 
-hh_id = sys.argv[1]
+hh_id = input('What is the id of the household that you want to use?')
 
 a_path = f'data/{hh_id}_a.csv'
 b_path = f'data/{hh_id}_b.csv'
 s_path = f'data/{hh_id}_s.csv'
 t_path = f'data/{hh_id}_TT.csv'
 d_path = f'data/{hh_id}_TT.csv'
+
+
+"""
+a_path = "data/1002724_a.csv"
+b_path = "data/1002724_b_tight_tw.csv"
+s_path = "data/1002724_s_short.csv"
+t_path = "data/1002724_TT.csv"
+d_path = "data/1002724_TT.csv"
+"""
+
+"""
+a_path = "data/1036350_a.csv"
+b_path = "data/1036350_b.csv"
+s_path = "data/1036350_s.csv"
+t_path = "data/1036350_TT.csv"
+d_path = "data/1036350_TT.csv"
+"""
 
 # Parameter Constants
 MU = 1.0
