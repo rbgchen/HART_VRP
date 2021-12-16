@@ -51,6 +51,7 @@ def record_metrics(d, t, s, depot, paths, timetables):
     path_metrics = []
     for i in range(len(paths)):
         row = [i+1]
+
         row.extend(get_route_metrics(d, t, s, depot, paths[i], timetables[i]))
         path_metrics.append(row)
     if exists('../metrics.csv'):

@@ -6,13 +6,14 @@ from results_to_csv import results_to_csv, record_metrics
 
 # Path constants
 
-"""
-a_path = "data/a.csv"
-b_path = "data/b.csv"
-s_path = "data/s.csv"
-t_path = "data/t.csv"
-d_path = "data/d.csv"
-"""
+hh_id = input('What is the id of the household that you want to use?')
+
+a_path = f'data/{hh_id}_a.csv'
+b_path = f'data/{hh_id}_b.csv'
+s_path = f'data/{hh_id}_s.csv'
+t_path = f'data/{hh_id}_TT.csv'
+d_path = f'data/{hh_id}_TT.csv'
+
 
 """
 a_path = "data/1002724_a.csv"
@@ -21,12 +22,6 @@ s_path = "data/1002724_s_short.csv"
 t_path = "data/1002724_TT.csv"
 d_path = "data/1002724_TT.csv"
 """
-
-a_path = "data/1035989_a.csv"
-b_path = "data/1035989_b.csv"
-s_path = "data/1035989_s.csv"
-t_path = "data/1035989_TT.csv"
-d_path = "data/1035989_TT.csv"
 
 """
 a_path = "data/1036350_a.csv"
@@ -260,10 +255,10 @@ def insertion():
         final_times[index] = clean_timetable(final_paths[index])
 
     results_to_csv(N, final_paths, final_times)
+    record_metrics(d, t, s, DEPOT, final_paths, final_times)
     print('Results have been written to results.csv and metrics.csv.')
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
-    return record_metrics(d, t, s, DEPOT, final_paths, final_times)
 
 
 if __name__ == '__main__':
