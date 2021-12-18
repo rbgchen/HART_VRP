@@ -1,39 +1,17 @@
 """
 Insertion heuristic for the second way to calculate c2, minimizing push forward and wait times.
 """
-
+import sys
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv, record_metrics
 
-"""
-a_path = "data/a.csv"
-b_path = "data/b.csv"
-s_path = "data/s.csv"
-t_path = "data/t.csv"
-d_path = "data/d.csv"
-"""
+hh_id = sys.argv[1]
 
-"""
-a_path = "data/1002724_a.csv"
-b_path = "data/1002724_b_tight_tw.csv"
-s_path = "data/1002724_s_short.csv"
-t_path = "data/1002724_TT.csv"
-d_path = "data/1002724_TT.csv"
-"""
-
-a_path = "data/1035989_a.csv"
-b_path = "data/1035989_b.csv"
-s_path = "data/1035989_s.csv"
-t_path = "data/1035989_TT.csv"
-d_path = "data/1035989_TT.csv"
-
-"""
-a_path = "data/1036350_a.csv"
-b_path = "data/1036350_b.csv"
-s_path = "data/1036350_s.csv"
-t_path = "data/1036350_TT.csv"
-d_path = "data/1036350_TT.csv"
-"""
+a_path = f'data/{hh_id}_a.csv'
+b_path = f'data/{hh_id}_b.csv'
+s_path = f'data/{hh_id}_s.csv'
+t_path = f'data/{hh_id}_TT.csv'
+d_path = f'data/{hh_id}_TT.csv'
 
 # Parameter Constants
 MU = 1.0
@@ -288,9 +266,9 @@ def insertion():
     for i_best in range(len(final_times)):
         final_times[i_best] = clean_timetable(final_paths[i_best])
 
-    results_to_csv(N, final_paths, final_times)
-    record_metrics(d, t, s, DEPOT, final_paths, final_times)
-    print('Results have been written to results.csv and metrics.csv.')
+    results_to_csv(N, final_paths, final_times, hh_id, 2)
+    record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 2)
+    print(f'Results have been written to {hh_id}_results_2.csv and {hh_id}_metrics_2.csv.')
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
 

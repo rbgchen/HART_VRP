@@ -1,4 +1,4 @@
 .idea
 __pycache__
-results.csv
-metrics.csv
+*_results_*.csv
+*_metrics_*.csv

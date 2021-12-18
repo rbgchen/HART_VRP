@@ -1,35 +1,19 @@
 """
 Insertion heuristic for the first way to calculate c2, minimizing push forward and wait times.
 """
+import sys
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv, record_metrics
 
 # Path constants
 
-hh_id = input('What is the id of the household that you want to use?')
+hh_id = sys.argv[1]
 
 a_path = f'data/{hh_id}_a.csv'
 b_path = f'data/{hh_id}_b.csv'
 s_path = f'data/{hh_id}_s.csv'
 t_path = f'data/{hh_id}_TT.csv'
 d_path = f'data/{hh_id}_TT.csv'
-
-
-"""
-a_path = "data/1002724_a.csv"
-b_path = "data/1002724_b_tight_tw.csv"
-s_path = "data/1002724_s_short.csv"
-t_path = "data/1002724_TT.csv"
-d_path = "data/1002724_TT.csv"
-"""
-
-"""
-a_path = "data/1036350_a.csv"
-b_path = "data/1036350_b.csv"
-s_path = "data/1036350_s.csv"
-t_path = "data/1036350_TT.csv"
-d_path = "data/1036350_TT.csv"
-"""
 
 # Parameter Constants
 MU = 1.0
@@ -254,9 +238,9 @@ def insertion():
     for index in range(len(final_times)):
         final_times[index] = clean_timetable(final_paths[index])
 
-    results_to_csv(N, final_paths, final_times, hh_id)
-    record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id)
-    print(f'Results have been written to {hh_id}_results.csv and {hh_id}_metrics.csv.')
+    results_to_csv(N, final_paths, final_times, hh_id, 1)
+    record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 1)
+    print(f'Results have been written to {hh_id}_results_1.csv and {hh_id}_metrics_1.csv.')
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
 
