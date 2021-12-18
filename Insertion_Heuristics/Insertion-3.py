@@ -15,9 +15,9 @@ d_path = f'data/{hh_id}_TT.csv'
 
 # Parameter Constants
 MU = 1.0
-ALPHA_1 = 1/3
-ALPHA_2 = 1/3
-ALPHA_3 = 1/3
+ALPHA_1 = 1 / 3
+ALPHA_2 = 1 / 3
+ALPHA_3 = 1 / 3
 LAMBDA = 1.0
 
 # Network data
@@ -30,7 +30,7 @@ for i in range(len(t)):
     for j in range(len(t[i])):
         t[i][j] /= 60
 HOME = 0
-P_PLUS = set(range(1, int((len(a)-2)/2) + 1))
+P_PLUS = set(range(1, int((len(a) - 2) / 2) + 1))
 P_MINUS = set(range(max(P_PLUS) + 1, len(a) - 1))
 DEPOT = max(P_MINUS) + 1
 P = P_PLUS | P_MINUS
@@ -186,7 +186,7 @@ def clean_timetable(path):
                 new_timetable[destination] = [max(a[destination], new_timetable[source][0] + s[source] +
                                                   t[source][destination]), None]
                 new_timetable[destination][1] = max(0, a[destination] - (new_timetable[source][0] + s[source]
-                                                    + t[source][destination]))
+                                                                         + t[source][destination]))
                 source = destination
                 destination = 0
                 break
@@ -235,11 +235,11 @@ def insertion():
         final_times[table] = clean_timetable(final_paths[table])
 
     results_to_csv(N, final_paths, final_times, hh_id, 3)
-    record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 3)
-    print(f'Results have been written to {hh_id}_results_3.csv and {hh_id}_metrics_3.csv.')
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
+    return record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 3)
 
 
 if __name__ == '__main__':
     insertion()
+    print(f'Results have been written to {hh_id}_results_3.csv and {hh_id}_metrics_3.csv.')

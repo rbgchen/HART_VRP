@@ -239,11 +239,12 @@ def insertion():
         final_times[index] = clean_timetable(final_paths[index])
 
     results_to_csv(N, final_paths, final_times, hh_id, 1)
-    record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 1)
-    print(f'Results have been written to {hh_id}_results_1.csv and {hh_id}_metrics_1.csv.')
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
+
+    return record_metrics(d, t, s, DEPOT, final_paths, final_times, hh_id, 1)
 
 
 if __name__ == '__main__':
     insertion()
+    print(f'Results have been written to {hh_id}_results_1.csv and {hh_id}_metrics_1.csv.')

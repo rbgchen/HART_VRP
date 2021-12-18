@@ -53,10 +53,12 @@ def record_metrics(d, t, s, depot, paths, timetables, hh_id, heuristic):
     """
     fields = ['Vehicle #', 'R(d)', 'R(t)', 'Wait Time', 'Avg. Occupancy']
     path_metrics = []
+    returned_metrics = []
     for i in range(len(paths)):
-        row = [i+1]
-
-        row.extend(get_route_metrics(d, t, s, depot, paths[i], timetables[i]))
+        row = [i + 1]
+        vehicle_metrics = get_route_metrics(d, t, s, depot, paths[i], timetables[i])
+        returned_metrics.append(vehicle_metrics)
+        row.extend(vehicle_metrics)
         path_metrics.append(row)
     if exists(f'./{hh_id}_metrics_{heuristic}.csv'):
         mode = 'w'
@@ -68,3 +70,4 @@ def record_metrics(d, t, s, depot, paths, timetables, hh_id, heuristic):
         writer = csv.writer(metrics_file)
         writer.writerow(fields)
         writer.writerows(path_metrics)
+    return returned_metrics
