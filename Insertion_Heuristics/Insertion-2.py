@@ -4,6 +4,7 @@ Insertion heuristic for the second way to calculate c2, minimizing push forward 
 import sys
 from csv_to_list import csv_to_array
 from results_to_csv import results_to_csv, record_metrics
+from results_to_csv_computer import results_to_csv_computer
 
 hh_id = sys.argv[1]
 
@@ -267,6 +268,7 @@ def insertion():
         final_times[i_best] = clean_timetable(final_paths[i_best])
 
     results_to_csv(N, final_paths, final_times, hh_id, 2)
+    results_to_csv_computer(final_paths, final_times, hh_id, 2)
     if len(updated_P) > 0:
         print(f'Uninserted requests: {updated_P}')
 
